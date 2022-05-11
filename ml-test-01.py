@@ -9,6 +9,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import accuracy_score
 
 from joblib import Memory
+import time
 
 import matplotlib.pyplot as plt 
 import seaborn as sns
@@ -16,6 +17,7 @@ import seaborn as sns
 memory = Memory('./tmp')
 fetch_openml_cached = memory.cache(fetch_openml)
 bunch = fetch_openml_cached("titanic", version=1, as_frame=True)
+
 # print(f"DataFrame shape : {bunch.frame.shape}\n=================================")
 # print(f"DataFrame info : {bunch.frame.info()}\n=================================")
 # print(f"DataFrame columns : {bunch.frame.columns}\n=================================")
@@ -49,3 +51,10 @@ model.fit(X, y)
 # See if prediction fits
 score = accuracy_score(y_t, model.predict(X_t[['age','sibsp','parch','fare']]))
 print("Accuracy score: ", score)
+
+#kfold = StratifiedKFold(n_splits=10, random_state=10121976, shuffle=True)
+# model = RandomForestClassifier(random_state=10197612)
+
+# for train_index, test_index in kfold.split(X_, y):
+#     model.fit(X_t[], y_t)
+#     print("TRAIN:", train_index, "TEST:", test_index)
