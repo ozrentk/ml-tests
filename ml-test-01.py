@@ -1,3 +1,21 @@
+'''
+-----------------------------------------------------------------------------------------------
+Features
+-----------------------------------------------------------------------------------------------
+Survived: Outcome of survival (0 = No; 1 = Yes)
+Pclass: Socio-economic class (1 = Upper class; 2 = Middle class; 3 = Lower class)
+Name: Name of passenger
+Sex: Sex of the passenger
+Age: Age of the passenger (Some entries contain NaN)
+SibSp: Number of siblings and spouses of the passenger aboard
+Parch: Number of parents and children of the passenger aboard
+Ticket: Ticket number of the passenger
+Fare: Fare paid by the passenger
+Cabin Cabin number of the passenger (Some entries contain NaN)
+Embarked: Port of embarkation of the passenger (C = Cherbourg; Q = Queenstown; S = Southampton)
+-----------------------------------------------------------------------------------------------
+'''
+
 import numpy as np 
 import pandas as pd 
 
@@ -7,6 +25,9 @@ from sklearn.datasets import fetch_openml
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.metrics import accuracy_score
+# from sklearn.impute import SimpleImputer
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
 
 from joblib import Memory
 import time
@@ -26,13 +47,54 @@ df = bunch.frame
 # print(f"How much missing value in every column : {bunch.frame.isna().sum()}\n=================================")
 
 # Drop rows with missing values
-df = df.dropna(subset=['pclass','age','sibsp','parch','fare','sex'])
+# df = df.dropna(subset=['pclass','age','sibsp','parch','fare','sex'])
 #print(bunch.frame.to_string())
 
 # Form data (X) and target (y) frame
 # Column 'sex' will break down to 'sex_male' and 'sex_female'
 X = pd.get_dummies(df[['pclass','age','sibsp','parch','fare','sex']])
 # print(X.to_string())
+X.to_csv(path_or_buf='C:/Programiranje/ml-tests/titanic-not-imputed.csv')
+
+# Impute missing values
+# imp = SimpleImputer(missing_values=np.nan, strategy='mean')
+# No early stopping: sample_posterior=True
+imp = IterativeImputer(
+    max_iter=15, 
+    random_state=0, 
+    verbose=1, 
+    sample_posterior=True)
+#print(X.dtypes)
+df_imputed_arr=imp.fit_transform(df[['age','sibsp','parch','fare','survived']])
+#X_arr = imp.fit_transform(X)
+df_imputed = pd.DataFrame(df_imputed_arr, columns=['age','sibsp','parch','fare','survived'])
+X['age']=df_imputed['age']
+X['fare']=df_imputed['fare']
+X['sex_female'] = X['sex_female'].astype('int8')
+X['sex_male'] = X['sex_male'].astype('int8')
+
+X['age'] = np.select(
+    [df_imputed.age < 0, df_imputed.age <= 1, df_imputed.age > 1],
+    [0, df_imputed.age, round(df_imputed.age*2)/2]
+)
+
+#X['age'] = X['age'].round(decimals=0)
+#print(X.dtypes)
+
+# Drop other NaN's
+#X = X.dropna(subset=['pclass','age','sibsp','parch','fare','sex_female','sex_male'])
+
+# Validate!
+if np.any(np.isnan(X)):
+    print("There are NaN's")
+    print(X.isna().sum())
+    exit()
+elif np.any(np.isinf(X)):
+    print("There are infinite vaues")
+    exit()
+
+
+X.to_csv(path_or_buf='C:/Programiranje/ml-tests/titanic-imputed.csv')
 
 y = df[['survived']]
 # print(y.to_string())
