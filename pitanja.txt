@@ -1,0 +1,7 @@
+1. Da li da se prebacim na OneHotEncoder?
+2. Kako naći dobar dataset?
+3. Što ako sam našao dataset koji nema target?
+4. Ako dataset već sam po sebi ima podatke koji nedostaju, ima li smisla da krećem od toga?
+5. Ako uzmem dataset a podacima koji nedostaju, moram napraviti imputation već prije treniranja modela,
+   inače treniranje neće proći
+6. Mogu li koristiti sintetički dataset u ovu svrhu i koji? (Plaitpy, DataSynthesizer, Pydbgen, Mimesis)
