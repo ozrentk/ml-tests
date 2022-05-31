@@ -4,4 +4,4 @@
 4. Ako dataset već sam po sebi ima podatke koji nedostaju, ima li smisla da krećem od toga?
 5. Ako uzmem dataset a podacima koji nedostaju, moram napraviti imputation već prije treniranja modela,
    inače treniranje neće proći
-6. Mogu li koristiti sintetički dataset u ovu svrhu i koji? (Plaitpy, DataSynthesizer, Pydbgen, Mimesis)
+6. Mog08
